@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/dqn/pritube/api"
+	"github.com/dqn/pritube/util"
 )
 
 const (
@@ -37,21 +37,6 @@ func New(channelID string) *Chvideos {
 	}
 }
 
-func getStringInBetween(str, start, end string) string {
-	s := strings.Index(str, start)
-	if s == -1 {
-		return ""
-	}
-
-	s += len(start)
-	e := strings.Index(str[s:], end)
-	if e == -1 {
-		return ""
-	}
-
-	return str[s : s+e]
-}
-
 func fetchInitialData(channelID string) (*InitialDataResponse, error) {
 	resp, err := api.Client.Get(fmt.Sprintf(channelVideosEndpoint, channelID))
 	if err != nil {
@@ -64,7 +49,7 @@ func fetchInitialData(channelID string) (*InitialDataResponse, error) {
 		return nil, err
 	}
 
-	initialData := getStringInBetween(string(b), `window["ytInitialData"] = `, ";\n")
+	initialData := util.GetStringInBetween(string(b), `window["ytInitialData"] = `, ";\n")
 	var idr InitialDataResponse
 	if err = json.Unmarshal([]byte(initialData), &idr); err != nil {
 		return nil, err
