@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"github.com/dqn/pritube/api"
 	"github.com/dqn/pritube/util"
@@ -108,18 +107,6 @@ func (c *Client) fetchMetadata(videoID string) (*metadataResponse, error) {
 
 	return &r, err
 }
-func parseViewerCountString(s string) (int, error) {
-
-	var buf bytes.Buffer
-
-	for _, r := range s {
-		if r >= '0' && r <= '9' {
-			buf.WriteRune(r)
-		}
-	}
-
-	return strconv.Atoi(buf.String())
-}
 
 // Fetch metadata.
 func (c *Client) Fetch(videoID string) (*Metadata, error) {
@@ -148,7 +135,7 @@ func (c *Client) Fetch(videoID string) (*Metadata, error) {
 			meta.ShortViewCount = viewCount.ExtraShortViewCount.SimpleText
 			meta.IsLive = viewCount.IsLive
 
-			count, err := parseViewerCountString(meta.ViewCount)
+			count, err := util.RetrieveIntFromDisplayText(meta.ViewCount)
 			if err != nil {
 				return nil, err
 			}
