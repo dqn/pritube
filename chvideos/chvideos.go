@@ -15,8 +15,7 @@ const (
 	channelVideosEndpoint  = api.BaseURL + "/channel/%s/videos"
 	subsequentDataEndpoint = api.BaseURL + "/browse_ajax"
 
-	xYoutubeClientName    = "1"
-	xYoutubeClientVersion = "2.20200617.02.00"
+	xYoutubeClientName = "1"
 )
 
 // Chvideos is channel videos fetcher.
@@ -82,7 +81,7 @@ func fetchSubsequentData(continuation string, itct string) (ChannelVideosRespons
 
 	req.Header = http.Header{
 		"x-youtube-client-name":    {xYoutubeClientName},
-		"x-youtube-client-version": {xYoutubeClientVersion},
+		"x-youtube-client-version": {api.ClientVersion},
 	}
 	req.URL.RawQuery = url.Values{
 		"ctoken":       {continuation},
