@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/dqn/pritube/api"
 )
 
 const (
-	baseURL = "https://www.youtube.com"
-
-	channelVideosEndpoint  = baseURL + "/channel/%s/videos"
-	subsequentDataEndpoint = baseURL + "/browse_ajax"
+	channelVideosEndpoint  = api.BaseURL + "/channel/%s/videos"
+	subsequentDataEndpoint = api.BaseURL + "/browse_ajax"
 
 	xYoutubeClientName    = "1"
 	xYoutubeClientVersion = "2.20200617.02.00"
@@ -22,7 +22,6 @@ const (
 // Chvideos is channel videos fetcher.
 type Chvideos struct {
 	channelID    string
-	client       *http.Client
 	continuation string
 	itct         string
 	IsCompleted  bool
@@ -32,7 +31,6 @@ type Chvideos struct {
 func New(channelID string) *Chvideos {
 	return &Chvideos{
 		channelID:    channelID,
-		client:       &http.Client{},
 		continuation: "",
 		itct:         "",
 		IsCompleted:  false,
@@ -54,8 +52,8 @@ func getStringInBetween(str, start, end string) string {
 	return str[s : s+e]
 }
 
-func fetchInitialData(client *http.Client, channelID string) (*InitialDataResponse, error) {
-	resp, err := client.Get(fmt.Sprintf(channelVideosEndpoint, channelID))
+func fetchInitialData(channelID string) (*InitialDataResponse, error) {
+	resp, err := api.Client.Get(fmt.Sprintf(channelVideosEndpoint, channelID))
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +89,7 @@ func retrieveInitialDataItems(idr *InitialDataResponse) ([]GridVideoRenderer, st
 	return gvr, continuation, itct
 }
 
-func fetchSubsequentData(client *http.Client, continuation string, itct string) (ChannelVideosResponse, error) {
+func fetchSubsequentData(continuation string, itct string) (ChannelVideosResponse, error) {
 	req, err := http.NewRequest("GET", subsequentDataEndpoint, nil)
 	if err != nil {
 		return nil, err
@@ -107,7 +105,7 @@ func fetchSubsequentData(client *http.Client, continuation string, itct string) 
 		"itct":         {itct},
 	}.Encode()
 
-	resp, err := client.Do(req)
+	resp, err := api.Client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +151,7 @@ func (c *Chvideos) FetchNext() ([]GridVideoRenderer, error) {
 	}
 
 	if c.continuation == "" {
-		idr, err := fetchInitialData(c.client, c.channelID)
+		idr, err := fetchInitialData(c.channelID)
 		if err != nil {
 			return nil, err
 		}
@@ -164,7 +162,7 @@ func (c *Chvideos) FetchNext() ([]GridVideoRenderer, error) {
 		return gvr, nil
 	}
 
-	cvr, err := fetchSubsequentData(c.client, c.continuation, c.itct)
+	cvr, err := fetchSubsequentData(c.continuation, c.itct)
 	if err != nil {
 		return nil, err
 	}
@@ -182,9 +180,7 @@ func (c *Chvideos) FetchNext() ([]GridVideoRenderer, error) {
 
 // FetchAll fetches all channel videos.
 func FetchAll(channelID string) ([]GridVideoRenderer, error) {
-	client := &http.Client{}
-
-	idr, err := fetchInitialData(client, channelID)
+	idr, err := fetchInitialData(channelID)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +188,7 @@ func FetchAll(channelID string) ([]GridVideoRenderer, error) {
 	gvr, continuation, itct := retrieveInitialDataItems(idr)
 
 	for continuation != "" {
-		cvr, err := fetchSubsequentData(client, continuation, itct)
+		cvr, err := fetchSubsequentData(continuation, itct)
 		if err != nil {
 			return nil, err
 		}
