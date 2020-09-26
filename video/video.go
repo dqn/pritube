@@ -41,13 +41,12 @@ func FetchInfo(videoID string) (*PlayerResponse, error) {
 	}
 
 	if status, ok := resp["status"]; !ok {
-		err = fmt.Errorf("failed to fetch video info")
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch video info")
 	} else if status[0] != "ok" {
 		reason, ok := resp["reason"]
 
 		if ok {
-			return nil, fmt.Errorf(reason[0])
+			return nil, fmt.Errorf("fetching video error: " + reason[0])
 		}
 
 		return nil, fmt.Errorf("unknown fetch info error: %s", resp)

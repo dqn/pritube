@@ -15,6 +15,7 @@ import (
 const endpoint = api.BaseURL + "/youtubei/v1/updated_metadata"
 
 // Client for fetching metadata.
+// Only streaming live, archive and primed video are supported.
 type Client struct {
 	key      string
 	Language string
@@ -101,8 +102,7 @@ func (c *Client) fetchMetadata(videoID string) (*metadataResponse, error) {
 	}
 
 	if len(r.Actions) == 0 {
-		err = fmt.Errorf("this video id is not available")
-		return nil, err
+		return nil, fmt.Errorf("this video id is not available")
 	}
 
 	return &r, err

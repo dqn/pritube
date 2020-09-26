@@ -51,7 +51,7 @@ func fetchInitialData(channelID string) (*InitialDataResponse, error) {
 	initialData := util.GetStringInBetween(string(b), `window["ytInitialData"] = `, ";\n")
 	var idr InitialDataResponse
 	if err = json.Unmarshal([]byte(initialData), &idr); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch videos")
 	}
 
 	return &idr, nil
