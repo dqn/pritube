@@ -1,7 +1,7 @@
 # pritube
 
 [![test](https://github.com/dqn/pritube/workflows/test/badge.svg)](https://github.com/dqn/pritube/actions)
-[![godoc](https://godoc.org/github.com/dqn/pritube?status.svg)](https://pkg.go.dev/github.com/dqn/pritube)
+[![godoc](https://godoc.org/github.com/dqn/pritube?status.svg)](https://pkg.go.dev/github.com/dqn/pritube?tab=overview)
 
 YouTube private API wrapper.
 
@@ -77,7 +77,7 @@ func main() {
 }
 ```
 
-For more information, check out the [documentation](https://pkg.go.dev/github.com/dqn/pritube).
+For more information, check out the [documentation](https://pkg.go.dev/github.com/dqn/pritube?tab=overview).
 
 ## License
 
