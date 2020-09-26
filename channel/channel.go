@@ -20,8 +20,8 @@ type Channel struct {
 	ID              string
 	Title           string
 	Description     string
-	Avatars         []Thumbnail
-	Banners         []Thumbnail
+	Avatars         []thumbnail
+	Banners         []thumbnail
 	ChannelURL      string
 	SubscriberCount int
 	ViewCount       int
@@ -29,7 +29,7 @@ type Channel struct {
 	JoinedDate      time.Time
 }
 
-func fetchChannel(channelID string) (*AboutResponse, error) {
+func fetchChannel(channelID string) (*aboutResponse, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf(endpoint, channelID), nil)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func fetchChannel(channelID string) (*AboutResponse, error) {
 
 	rawData := util.GetStringInBetween(string(b), `window["ytInitialData"] = `, ";\n")
 
-	var idr AboutResponse
+	var idr aboutResponse
 	if err = json.Unmarshal([]byte(rawData), &idr); err != nil {
 		return nil, fmt.Errorf("failed to fetch channel")
 	}
