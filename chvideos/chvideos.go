@@ -61,16 +61,20 @@ func fetchInitialData(channelID string) (*InitialDataResponse, error) {
 func retrieveInitialDataItems(idr *InitialDataResponse) ([]GridVideoRenderer, string, string) {
 	gr := idr.Contents.TwoColumnBrowseResultsRenderer.Tabs[1].TabRenderer.Content.SectionListRenderer.Contents[0].ItemSectionRenderer.Contents[0].GridRenderer
 
-	data := gr.Continuations[0].NextContinuationData
-	continuation := data.Continuation
-	itct := data.ClickTrackingParams
-
 	gvr := make([]GridVideoRenderer, 0, len(gr.Items))
 	for _, item := range gr.Items {
 		gvr = append(gvr, item.GridVideoRenderer)
 	}
 
-	return gvr, continuation, itct
+	if len(gr.Continuations) != 0 {
+		data := gr.Continuations[0].NextContinuationData
+		continuation := data.Continuation
+		itct := data.ClickTrackingParams
+
+		return gvr, continuation, itct
+	}
+
+	return gvr, "", ""
 }
 
 func fetchSubsequentData(continuation string, itct string) (ChannelVideosResponse, error) {
@@ -142,6 +146,10 @@ func (c *Chvideos) FetchNext() ([]GridVideoRenderer, error) {
 
 		var gvr []GridVideoRenderer
 		gvr, c.continuation, c.itct = retrieveInitialDataItems(idr)
+
+		if c.continuation == "" {
+			c.IsCompleted = true
+		}
 
 		return gvr, nil
 	}
