@@ -1,5 +1,7 @@
 # pritube
 
+**This package is no longer maintained**
+
 [![test](https://github.com/dqn/pritube/workflows/test/badge.svg)](https://github.com/dqn/pritube/actions)
 [![godoc](https://godoc.org/github.com/dqn/pritube?status.svg)](https://pkg.go.dev/github.com/dqn/pritube?tab=overview)
 
